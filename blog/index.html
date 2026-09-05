@@ -214,7 +214,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <div class="kicker">Personal writings in English · SENA</div>
     <h2>Code, courts <span class="amp">&amp;</span> coffee.</h2>
 <p class="lede">A small magazine collecting the texts, recordings and videos produced through the course: the stories of my family, my gym, my studies, my travels and the topics of the moment, closed with two longer essays on <em>critical thinking and media literacy</em> and <em>crime and punishment</em>.</p>
-<p class="byline"><strong>By Jenifer</strong> · software engineering student · gym worker · basketball enthusiast · grab a coffee and read on</p>
+<p class="byline"><strong>By Jenifer</strong> · video game development technologist · gym worker · basketball enthusiast · grab a coffee and read on</p>
   </section>
 
   <nav class="contents" aria-label="Contents">
@@ -222,7 +222,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <ol class="toc">
       <li><span class="no">01</span><a href="#entry-1">Meet the Fruticas: my family, my roots</a><span class="cat">Family</span></li>
       <li><span class="no">02</span><a href="#entry-2">Lifting, dribbling, repeating</a><span class="cat">Hobbies</span></li>
-      <li><span class="no">03</span><a href="#entry-3">From spreadsheets to software</a><span class="cat">Work &amp; study</span></li>
+      <li><span class="no">03</span><a href="#entry-3">From the gym floor to game development</a><span class="cat">Work &amp; study</span></li>
       <li><span class="no">04</span><a href="#entry-4">Wanderlust: Ecuador, the coffee region and a dream called Asia</a><span class="cat">Travel</span></li>
       <li><span class="no">05</span><a href="#entry-5">Curious about everything</a><span class="cat">Current affairs</span></li>
       <li><span class="no">06</span><a href="#entry-6">Critical thinking and media literacy: don't believe everything you read <span class="tag-req">· required</span></a><span class="cat">Essay</span></li>
@@ -280,11 +280,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <div class="entry-head">
       <span class="num">03</span>
       <span class="cat">Work &amp; study</span>
-      <h4>From spreadsheets to software</h4>
+      <h4>From the gym floor to game development</h4>
       <span class="meta">Course artefact · video / audio / text</span>
     </div>
     <div class="entry-body">
-      <p class="lede">People often look confused when I say I study software engineering <em>and</em> work at a gym. One sounds like screens and clean code; the other, sweat and iron. To me, they're not that different.</p>
+<p class="lede">People often look confused when I say I study video game development <em>and</em> work at a gym. One sounds like screens and clean code; the other, sweat and iron. To me, they're not that different.</p>
       <figure class="plate" data-slot="entry-3">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" color="#B93A26" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="1"/><path d="M10 8.5 16 12l-6 3.5z" fill="#B93A26" stroke="none"/></svg>
         <div class="plate-copy">
@@ -293,7 +293,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           <p class="plate-hint">Drop the file in <code>blog/media/</code> and tell me its name, and I'll embed it in this plate.</p>
         </div>
       </figure>
-<p>At university I'm learning to think like an engineer: breaking big problems into small pieces, testing assumptions, and refusing to accept "it just works" as an answer. I love that moment when a bug finally makes sense and the solution clicks: it's the same satisfaction as finally hitting a rep that's been defeating you for weeks.</p>
+<p>At SENA, my technologist programme in video game development is teaching me to think like an engineer: breaking big problems into small pieces, testing assumptions, and refusing to accept "it just works" as an answer. I love that moment when a bug finally makes sense and the solution clicks: it's the same satisfaction as finally hitting a rep that's been defeating you for weeks.</p>
       <p>At the gym, though, my job is people. I handle members, bookings, machines and the thousand small dramas of a busy day. It's taught me patience, communication and how to stay calm under pressure: soft skills that no textbook gives you, and that every team at a tech company desperately needs.</p>
       <p>The real trick is organisation. My week is a puzzle of classes, shifts and training sessions, and I've learned to protect my time the way an engineer protects a production system: with boundaries and backups. One day I'd love to build software for the fitness world.</p>
     </div>
@@ -415,10 +415,24 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 /* MEDIA SLOTS — edit this config when you add real course artefacts.
    kind: 'video' | 'audio' | 'text'. src: file path (video/audio) or literal transcript text. */
 const MEDIA = {
-  "entry-1": { kind: null, src: "" },   // family     → e.g. { kind:"video", src:"media/family-video.mp4" }
-  "entry-2": { kind: null, src: "" },   // hobbies    → e.g. { kind:"audio", src:"media/hobbies-audio.mp3" }
+  "entry-1": { kind: "text", src: `My family might be small, but it's loud, warm and wonderfully predictable. There's my dad, Carlos, the man who repairs everything from toasters to bad moods, and my mum, Yeni, who runs our house like a small, well-oiled company. Then there's my brother, also Carlos. Yes, two Carloses. We spent our childhood fighting over the bathroom and the remote, and we still do, but he's the first person I call when something good happens.
+
+I grew up listening to my parents talk about effort, honesty and patience, and I didn't realise until recently how much of that I'd absorbed. From my mum I learned to listen before speaking. From my dad I learned that humour keeps a family together better than rules do.
+
+To me, family isn't just blood. It's the people who show up, again and again. Mine showed up, and I try to do the same for them every single day.` },
+  "entry-2": { kind: "text", src: `If you ask what I do in my free time, the answer is short: I train. Most days you'll find me either loading a barbell at the gym or chasing a basketball around a court.
+
+The gym is my reset button. There's something beautifully honest about lifting weights: the barbell doesn't care about your mood, your excuses or your to-do list. It only responds to effort, rep by rep. Training taught me that progress is boring, and that's exactly why it works. You show up on the days you don't feel like it, and small consistent work compounds into results you can actually see.
+
+Basketball is the other half of my heart. It's fast, loud and unforgiving, but it's pure teamwork. A player who tries to do everything alone loses; a team that passes well wins ugly. Those lessons follow me off the court, into the classroom and onto the gym floor where I work.
+
+I don't separate my body from my brain. Training keeps my head clear, my discipline sharp and my mood human. It's not just exercise; it's my version of meditation.` },
   "entry-3": { kind: "image", src: "media/ple-map.png", caption: "My PLE map — the personal learning environment I designed in English class" },
-  "entry-4": { kind: null, src: "" },   // travel     → e.g. { kind:"video", src:"media/travel-video.mp4" }
+  "entry-4": { kind: "text", src: `My travel story starts in Ecuador. I've been there more times than anywhere else, drawn by my culture and my roots. Walking through its markets, hearing the accents, eating food that tastes like my grandmother's kitchen, I feel less like a tourist and more like someone visiting a part of themselves.
+
+Colombia has given me plenty of material too. I've wandered the Eje Cafetero, where the landscape is impossibly green and every coffee stop feels like a small ceremony. I've walked the streets of Medellín, a city that keeps reinventing itself at dizzying speed. I've danced vallenato in Valledupar, and I've stood on the beaches of San Andrés, where the sea turns a shade of blue you stop believing is real.
+
+And then there's Asia, my biggest dream. Not one country, the whole thing: the food, the temples, the architecture, the rhythm of cities that never sleep. Travel isn't about ticking boxes for me. It's about collecting new ways of seeing the world and bringing them home.` },
 "entry-5": { kind: "podcast", label: "Podcast · Trajectory, Plans, Actions and Solutions (GA5 audio)", embed: "72944533" },
   "entry-5b": { kind: "podcast", label: "Podcast · Attitudes, Beliefs and Obligations in My Academic and Work Context (GA4 audio)", embed: "72751519" }
 };
