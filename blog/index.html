@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jenifer's Journal · GA4-240202501-AA1-EV03</title>
+<style>
+  :root{
+    --paper:#FAF7F2; --card:#FFFFFF; --ink:#23211E; --muted:#6C655B;
+    --line:#E7E0D4; --terra:#B5542A; --terra-soft:#F3E3DA;
+    --green:#2E6B4F; --green-soft:#E2EDE6; --gold:#9A7B24; --gold-soft:#F4EEDC;
+    --blue:#2F5D8A; --blue-soft:#E3EAF2; --plum:#6B3F63; --plum-soft:#F0E6EE;
+    --shadow:0 10px 30px rgba(35,33,30,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.6;
+  }
+  h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif}
+
+  /* Header */
+  header{
+    position:sticky;top:0;z-index:40;background:rgba(250,247,242,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  }
+  .nav{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+  .brand .dot{width:34px;height:34px;border-radius:50%;background:var(--terra);color:#fff;
+    display:grid;place-items:center;font-weight:800;font-family:Georgia,serif;font-size:16px}
+  .brand .name{font-family:Georgia,serif;font-size:19px;font-weight:700;letter-spacing:.01em}
+  .brand .name span{color:var(--terra)}
+  .nav-links{margin-left:auto;display:flex;gap:20px;font-size:14px;font-weight:600}
+  .nav-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+  .nav-links a:hover{color:var(--terra)}
+
+  /* Hero */
+  .hero{max-width:1080px;margin:0 auto;padding:64px 24px 30px;display:flex;gap:40px;align-items:center;flex-wrap:wrap}
+  .hero-text{flex:1 1 420px}
+  .hero-text .kicker{font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--terra)}
+  .hero-text h1{font-size:clamp(32px,5vw,52px);line-height:1.08;margin:12px 0 14px;letter-spacing:-.01em}
+  .hero-text .tagline{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:58ch}
+  .hero-badge{flex:0 1 280px;background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:26px;box-shadow:var(--shadow);text-align:center}
+  .hero-badge .ava{width:86px;height:86px;border-radius:50%;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-family:Georgia,serif;font-size:34px;font-weight:700;margin:0 auto 12px}
+  .hero-badge h3{font-size:19px;margin-bottom:6px}
+  .hero-badge p{font-size:13.5px;color:var(--muted)}
+  .hero-badge .flag{font-size:22px;margin-top:10px;letter-spacing:4px}
+
+  /* Posts */
+  .section{max-width:1080px;margin:0 auto;padding:36px 24px}
+  .section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:26px}
+  .section-head h2{font-size:clamp(24px,3vw,32px)}
+  .section-head .sub{color:var(--muted);font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;
+    cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;display:flex;flex-direction:column;gap:10px;
+    text-align:left;font:inherit;color:inherit;position:relative;overflow:hidden;
+  }
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+  .card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--ac,var(--terra))}
+  .tag{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-size:11.5px;font-weight:800;
+    letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:99px;color:var(--ac,var(--terra));
+    background:color-mix(in srgb, var(--ac,var(--terra)) 12%, #fff)}
+  .card h3{font-size:20px;line-height:1.3}
+  .card .meta{font-size:12.5px;color:var(--muted)}
+  .card p{font-size:14.5px;color:var(--muted);flex:1}
+  .card .more{font-size:13.5px;font-weight:700;color:var(--ac,var(--terra))}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;z-index:60;display:none;align-items:flex-start;justify-content:center;
+    background:rgba(35,33,30,.55);padding:4vh 20px;overflow-y:auto}
+  .modal.open{display:flex}
+  .modal-box{background:var(--card);border-radius:22px;max-width:760px;width:100%;padding:44px 48px 40px;
+    box-shadow:0 30px 80px rgba(0,0,0,.25);position:relative;animation:rise .25s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .modal-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
+    background:var(--card);color:var(--muted);font-size:18px;cursor:pointer;transition:background .15s,color .15s}
+  .modal-close:hover{background:var(--ink);color:#fff}
+  .modal-box .tag{margin-bottom:14px}
+  .modal-box h2{font-size:clamp(24px,3.4vw,32px);line-height:1.15;margin-bottom:10px}
+  .modal-box .meta{font-size:13px;color:var(--muted);padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px}
+  .modal-box article{font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.75;color:#33302B}
+  .modal-box article p{margin-bottom:16px}
+  .modal-box article .lead{font-size:19px;color:var(--ink)}
+  .modal-box article strong{color:var(--ink)}
+  .modal-box article h3{font-size:19px;font-family:Georgia,serif;margin:22px 0 8px;color:var(--ink)}
+  .modal-box article ul{margin:0 0 16px 22px}
+  .modal-box article li{margin-bottom:6px}
+  .pull{background:var(--paper);border-left:4px solid var(--ac,var(--terra));padding:14px 18px;border-radius:0 12px 12px 0;
+    font-style:italic;color:#4A453D;margin:22px 0}
+
+  /* Footer */
+  footer{border-top:1px solid var(--line);margin-top:44px;padding:28px 24px;text-align:center;color:var(--muted);font-size:13.5px}
+  footer .course{font-weight:700;color:var(--ink)}
+
+  @media(max-width:640px){
+    .hero{padding-top:44px}
+    .nav-links{display:none}
+    .modal-box{padding:34px 24px 30px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="brand" href="#top">
+      <span class="dot">J</span>
+      <span class="name">Jenifer's <span>Journal</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#about">About</a>
+      <a href="#posts">Posts</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-text">
+    <div class="kicker">GA4-240202501 · AA1 · EV03 · English</div>
+    <h1>Code, courts and coffee:<br>a Colombian blog in English</h1>
+    <p class="tagline">G'day and welcome! I'm Jenifer — a software engineering student who works at her local gym, plays basketball, and can't stop learning about culture, technology and the world around us.</p>
+  </div>
+  <div class="hero-badge">
+    <div class="ava">J</div>
+    <h3>Jenifer</h3>
+    <p>Software engineering student<br>Gym &amp; basketball enthusiast<br>Ecuador &amp; Colombia · dreaming of Asia</p>
+    <div class="flag">🇨🇴 · 🇦🇺</div>
+  </div>
+</section>
+
+<section class="section" id="about">
+  <div class="section-head">
+    <h2>About this blog</h2>
+    <span class="sub">six posts about my life plus two bigger conversations</span>
+  </div>
+  <p style="max-width:72ch;color:var(--muted);font-size:15.5px">This journal collects the texts, stories and reflections I've been building in English during my training: my family, my hobbies, my studies and work, my travels and the topics of the moment. It finishes with two longer entries on <em>critical thinking and media literacy</em> and <em>crime and punishment</em> — the two themes we explored in the formative component. Grab a coffee, have a read, and feel free to leave your thoughts. No worries if you disagree — that's what the comments are for.</p>
+</section>
+
+<section class="section" id="posts">
+  <div class="section-head">
+    <h2>All posts</h2>
+    <span class="sub">7 entries · click any card to read</span>
+  </div>
+  <div class="grid" id="cards"></div>
+</section>
+
+<footer>
+  <p>© 2026 <strong>Jenifer's Journal</strong> · Evidence <span class="course">GA4-240202501-AA1-EV03</span> · Blog — Servicio Nacional de Aprendizaje (SENA)</p>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box" id="modal-box">
+    <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    <span class="tag" id="modal-tag"></span>
+    <h2 id="modal-title"></h2>
+    <div class="meta" id="modal-meta"></div>
+    <article id="modal-body"></article>
+  </div>
+</div>
+
+<script>
+const POSTS = [
+  {
+    tag:"Family", ac:"var(--terra)",
+    title:"Meet the Fruticas: my family, my roots",
+    date:"18 August 2026 · 4 min read",
+    excerpt:"A short introduction to the people who made me who I am: Carlos, Yeni and… another Carlos. Yes, two of them.",
+    html:`<p class="lead">Every family has its own rhythm, and mine sounds like three voices arguing lovingly over <em>arepas</em> and the football score. I'm the middle of the story between two Carloses — my dad and my little brother — and one constant: my mum, Yeni.</p>
+    <p>My dad, Carlos, is the family's quiet engineer of jokes. He fixes everything from a broken fan to a bad mood, and he has spent years teaching me that patience is a skill you build, not a gift you're born with. My mum, Yeni, is the engine of our house: she keeps every plan running, every meal warm and every conversation honest. From her I learned that listening well is just as important as speaking.</p>
+    <p>And then there's my brother — also Carlos, because my parents clearly believed in efficiency. He's my loudest supporter and my most annoying critic, sometimes in the same sentence. We fight over the bathroom, the remote and the last <em>empanada</em>, but he's the first person I call with good news.</p>
+    <p>To me, family isn't just blood. It's the people who show up. Mine raised me to be curious, loyal and a little stubborn — and I wouldn't trade that for anything.</p>`
+  },
+  {
+    tag:"Hobbies", ac:"var(--green)",
+    title:"Lifting, dribbling, repeating: my life at the gym and on the court",
+    date:"25 August 2026 · 4 min read",
+    excerpt:"The iron and the basketball have taught me more about discipline and teamwork than any lecture ever could.",
+    html:`<p class="lead">Ask me what I do in my free time and the answer is simple: I train. Most days you'll find me either loading up a barbell or chasing a bouncing ball across a court.</p>
+    <p>The gym is where I reset. There's something honest about lifting weights — the machine doesn't care about your mood, your excuses or your to-do list. It only responds to effort, rep by rep. Over the years, training has taught me that progress is boring: it's showing up on the days you don't feel like it, and trusting that small consistent work compounds.</p>
+    <p>Basketball, on the other hand, is my social sport. It's fast, loud and unforgiving — but it's also pure teamwork. You quickly learn that a player who tries to do everything alone loses, and a team that passes well wins ugly. Those lessons travel with me far beyond the court; they've made me a better classmate, a better employee and a better friend.</p>
+    <p>Some people separate their body from their brain. I don't. Training keeps my head clear, my discipline sharp and my mood human. It's not just exercise — it's my version of meditation.</p>`
+  },
+  {
+    tag:"Work & study", ac:"var(--blue)",
+    title:"From spreadsheets to software: studying engineering while working at the gym",
+    date:"1 September 2026 · 5 min read",
+    excerpt:"Balancing a software engineering degree with a job at my gym isn't easy — but the two worlds feed each other.",
+    html:`<p class="lead">People often look confused when I say I study software engineering <em>and</em> work at a gym. One sounds like screens and clean code; the other, sweat and iron. To me, they're not that different.</p>
+    <p>At university I'm learning to think like an engineer: breaking big problems into small pieces, testing assumptions, and refusing to accept "it just works" as an answer. I love that moment when a bug finally makes sense and the solution clicks — it's the same satisfaction as finally hitting a rep that's been defeating you for weeks.</p>
+    <p>At the gym, though, my job is people. I handle members, bookings, machines and the thousand small dramas of a busy day. It's taught me patience, communication and how to stay calm under pressure — soft skills that no textbook gives you, and that every team at a tech company desperately needs.</p>
+    <p>The real trick is organisation. My week is a puzzle of classes, shifts and training sessions, and I've learned to protect my time the way an engineer protects a production system: with boundaries and backups. It's demanding, but I wouldn't have it any other way. One day I'd love to build software for the fitness world — an app that helps people train, literally, from the inside out.</p>`
+  },
+  {
+    tag:"Travel", ac:"var(--gold)",
+    title:"Wanderlust: Ecuador, the coffee region and a dream called Asia",
+    date:"4 September 2026 · 5 min read",
+    excerpt:"From the markets of Ecuador to the cafés of the Eje Cafetero — and someday, every corner of Asia.",
+    html:`<p class="lead">I'm not sure when I caught the travel bug, but I know where it bit me: in Ecuador. I've been there more than anywhere else, drawn by my culture and roots. Walking through its markets, hearing the accents, eating food that tastes like my grandmother's kitchen — it feels less like visiting a country and more like visiting a part of myself.</p>
+    <p>Closer to home, Colombia has already given me endless material. I've explored the <strong>Eje Cafetero</strong>, where the landscape is impossibly green and coffee stops are life events. I've wandered <strong>Medellín</strong>, a city that reinvents itself at an almost dizzying speed, and <strong>Valledupar</strong>, where vallenato music seems to rise straight out of the earth. I've also spent time in <strong>San Andrés</strong>, where the sea turns a shade of blue you stop believing is real.</p>
+    <p>But the biggest dream is Asia. Not one country — the whole thing. The food, the temples, the architecture, the rhythms of cities that never sleep: I want to taste it all, slowly, one train ride at a time. Travel, to me, isn't ticking boxes. It's collecting new ways of seeing the world and bringing them home.</p>`
+  },
+  {
+    tag:"Current affairs", ac:"var(--plum)",
+    title:"Curious about everything: the topics that keep me awake",
+    date:"5 September 2026 · 4 min read",
+    excerpt:"Social issues, the environment, technology and culture — why I try to learn a little about a lot.",
+    html:`<p class="lead">If you ask my friends what I talk about, they'll say "everything". I'm the person who goes down a rabbit hole about ocean currents at 11 p.m. and texts you a 30-second voice note about a new technology the next morning. I genuinely love learning what's happening in the world, in all its awkward, wonderful complexity.</p>
+    <p>The <strong>social</strong> side matters to me: inequality, education, mental health, and the quiet ways people help each other out. The <strong>environmental</strong> side does too — I want to understand what's really happening to the planet, not just what sounds good in a slogan. And then there's <strong>technology</strong>, which is both my career and my curiosity: I like learning how tools change the way we work, connect and think.</p>
+    <p>But my favourite "topic" is probably <strong>culture</strong> — food, music, traditions, language. It's the thread that ties everything else together. My rule is simple: stay curious, check your sources, and never stop asking why. There's always another mountain of things to learn, and honestly? That's the best part.</p>`
+  },
+  {
+    tag:"Critical thinking", ac:"var(--green)",
+    title:"Critical thinking and media literacy: don't believe everything you read",
+    date:"5 September 2026 · 7 min read",
+    excerpt:"In an age of deepfakes and echo chambers, asking 'who made this, and why?' has become a survival skill.",
+    html:`<p class="lead">Every day, hundreds of headlines fight for our attention. Some inform us. Some entertain us. And some are quietly designed to make us angry, scared or convinced — not because they're true, but because they're effective.</p>
+    <h3>What media literacy actually means</h3>
+    <p>Media literacy isn't about being against the media. It's the ability to <strong>understand, analyse and evaluate</strong> the messages we consume: who produced them, for what purpose, with what evidence, and from whose perspective. A media-literate person doesn't just ask "what does this say?" but also "why is this being said, to me, right now?"</p>
+    <p>That second question matters more than ever. Algorithms on social platforms don't optimise for truth; they optimise for engagement. Anger and fear keep us scrolling, so the platforms serve us more of what keeps us scrolling — and slowly, without noticing, we build an <strong>echo chamber</strong> where our views are repeated back until they feel like facts.</p>
+    <h3>Small habits that change everything</h3>
+    <p>I've started treating every viral claim like a suspicious package — examine it before opening it. Some habits that help:</p>
+    <ul>
+      <li><strong>Slow down.</strong> Outrage is a deadline the headline sets, not one you have to meet.</li>
+      <li><strong>Go lateral.</strong> Don't just read the source you're on — open new tabs and see what reliable sources say about the same story.</li>
+      <li><strong>Check the original.</strong> Screenshots and ripped clips lose context; find the full statement, image or video.</li>
+      <li><strong>Ask who benefits.</strong> Every story has an author, and every author has an interest.</li>
+      <li><strong>Notice your emotion.</strong> If a post makes you immediately furious, that's a signal to be extra careful.</li>
+    </ul>
+    <div class="pull">Being well-informed isn't about reading more. It's about reading better — and asking better questions.</div>
+    <p>Critical thinking and media literacy are not optional extras of modern education; they're the basic toolkit for being a citizen. In a world where anyone can publish anything, the ability to verify is a form of freedom. And the good news is, it's a muscle: the more you train it, the stronger it gets.</p>`
+  },
+  {
+    tag:"Crime & punishment", ac:"var(--terra)",
+    title:"Crime and punishment: what is prison actually for?",
+    date:"5 September 2026 · 7 min read",
+    excerpt:"Retribution, deterrence or rehabilitation? A reflection on justice systems — and what we know actually works.",
+    html:`<p class="lead">When someone commits a crime, society has to respond. But the question we rarely stop to ask is: <em>what is the punishment actually for?</em> Justice systems around the world juggle at least four goals — and they pull in very different directions.</p>
+    <h3>Four goals, one prisoner</h3>
+    <ul>
+      <li><strong>Retribution</strong> — punishment for its own sake; the idea that suffering should be proportional to harm caused.</li>
+      <li><strong>Deterrence</strong> — scaring the offender and others away from committing crimes in the future.</li>
+      <li><strong>Incapacitation</strong> — protecting society by physically removing the person from the streets.</li>
+      <li><strong>Rehabilitation</strong> — preparing the person to return to society as a safer, more capable citizen.</li>
+    </ul>
+    <p>Most people instinctively lean on retribution: "they did wrong, so they should suffer." It's emotionally satisfying, but the evidence is uncomfortable. Countries that emphasise rehabilitation — education inside prison, mental health support, job training, strong support after release — consistently show <strong>lower rates of reoffending</strong>. Meanwhile, systems built mostly on punishment often produce people who leave prison angrier, more isolated and less employable, which is a recipe for the same crime again.</p>
+    <h3>Beyond the prison walls</h3>
+    <p>There's also a growing conversation about <strong>restorative justice</strong>: bringing victims, offenders and communities together so the harm can be acknowledged and repaired, rather than just punished. In Colombia, a country that knows the cost of violence all too well, these conversations aren't theoretical — reintegration and peace-building are part of our own story.</p>
+    <p>None of this means we should be naive about serious crime, or that victims' suffering should be ignored. It means the goal of justice should be the outcome, not the emotion. The real question isn't "how harsh can we be?" but "how do we make society <em>safer</em>?" If prison only sorts people into the useful and the discarded, it has failed — no matter how many people we lock up.</p>
+    <div class="pull">Justice is not a feeling. It's a system that should be measured in results — and the results tell us rehabilitation works better than revenge.</div>`
+  }
+];
+
+const cards = document.getElementById("cards");
+const modal = document.getElementById("modal");
+const modalBox = document.getElementById("modal-box");
+const mTag = document.getElementById("modal-tag");
+const mTitle = document.getElementById("modal-title");
+const mMeta = document.getElementById("modal-meta");
+const mBody = document.getElementById("modal-body");
+const mClose = document.getElementById("modal-close");
+
+function cardHTML(p, i){
+  return `<button class="card" style="--ac:${p.ac}" data-i="${i}" aria-haspopup="dialog">
+    <span class="tag">${p.tag}</span>
+    <h3>${p.title}</h3>
+    <span class="meta">${p.date}</span>
+    <p>${p.excerpt}</p>
+    <span class="more">Read more →</span>
+  </button>`;
+}
+cards.innerHTML = POSTS.map(cardHTML).join("");
+
+function openPost(i){
+  const p = POSTS[i];
+  mTag.textContent = p.tag; mTag.style.setProperty("--ac", p.ac);
+  mTitle.textContent = p.title;
+  mMeta.textContent = p.date;
+  mBody.innerHTML = p.html;
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+  mClose.focus();
+}
+function closePost(){
+  modal.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+cards.addEventListener("click", e => {
+  const card = e.target.closest(".card");
+  if(card) openPost(Number(card.dataset.i));
+});
+mClose.addEventListener("click", closePost);
+modal.addEventListener("click", e => { if(e.target === modal) closePost(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape" && modal.classList.contains("open")) closePost(); });
+</script>
+</body>
+</html>
