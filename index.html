@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritmo de áreas, perímetros y volúmenes · Evidencia GA3-240201528-AA4-EV01</title>
+<style>
+  :root{
+    --fondo:#0B1D33; --navy:#16395F; --azul:#2E7CF6; --cielo:#7FB2FF;
+    --ambar:#FFB020; --coral:#FF6B5E; --menta:#2EC4B6; --blanco:#FFFFFF;
+    --gris:#8FA3BC; --linea:rgba(123,178,255,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--fondo); color:var(--blanco); overflow:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(1100px 700px at 85% -10%, rgba(46,124,246,.22), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, rgba(255,176,32,.12), transparent 55%),
+      radial-gradient(rgba(127,178,255,.16) 1px, transparent 1.6px);
+    background-size:auto, auto, 26px 26px;
+  }
+  #progress{position:fixed;top:0;left:0;height:4px;background:var(--ambar);width:0%;z-index:50;transition:width .35s ease}
+  .slide{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    padding:8vh 6vw; opacity:0; pointer-events:none; transform:translateY(14px);
+    transition:opacity .45s ease, transform .45s ease; z-index:1}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .wrap{width:min(1180px,100%);max-height:86vh;overflow-y:auto}
+  .kicker{font-size:13px;font-weight:800;letter-spacing:.22em;color:var(--ambar);text-transform:uppercase}
+  h1{font-size:clamp(30px,4.6vw,54px);font-weight:900;line-height:1.06;margin:14px 0 10px;letter-spacing:-.01em}
+  h2{font-size:clamp(22px,3vw,32px);font-weight:800;line-height:1.1;margin-bottom:8px}
+  .lead{color:var(--cielo);font-size:clamp(15px,1.6vw,18px);line-height:1.55;max-width:70ch}
+  .bar{width:74px;height:5px;background:var(--ambar);border-radius:99px;margin:18px 0}
+  .grid{display:grid;gap:16px;margin-top:26px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g6{grid-template-columns:repeat(3,1fr)}
+  .card{background:rgba(255,255,255,.045);border:1px solid var(--linea);border-radius:18px;
+    padding:20px 20px 18px; position:relative; overflow:hidden}
+  .card::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:var(--ac,var(--azul));opacity:.9}
+  .card h3{font-size:17px;font-weight:800;margin:10px 0 6px}
+  .card p{color:var(--gris);font-size:13.5px;line-height:1.5}
+  .card .n{font-size:26px;font-weight:900;color:var(--ac,var(--azul))}
+  .formula{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12.5px;color:#BBD4F5;margin-top:8px;background:rgba(11,29,51,.6);border:1px solid rgba(127,178,255,.18);border-radius:8px;padding:6px 9px;display:inline-block}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--a,var(--azul));margin-right:8px;vertical-align:middle}
+  .pill{display:inline-block;padding:7px 14px;border-radius:999px;background:var(--navy);border:1px solid var(--linea);font-size:12.5px;font-weight:700;color:var(--cielo)}
+  .banner{margin-top:26px;background:linear-gradient(90deg,var(--navy),#1b4a86);border:1px solid var(--linea);
+    border-radius:14px;padding:16px 22px;text-align:center;font-weight:700;color:var(--blanco);font-size:15px}
+  .banner b{color:var(--ambar)}
+  pre.code{background:#0A1626;border:1px solid #2E4A75;border-radius:16px;padding:26px 30px;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:clamp(12px,1.35vw,15px);line-height:1.6;margin-top:22px;white-space:pre;overflow-x:auto}
+  .code .k{color:var(--ambar);font-weight:700}
+  .code .s{color:var(--cielo)}
+  .code .m{color:var(--menta)}
+  .code .e{color:var(--coral)}
+  .nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:40;display:flex;gap:10px;align-items:center;background:rgba(11,29,51,.75);backdrop-filter:blur(8px);border:1px solid var(--linea);border-radius:999px;padding:8px 12px}
+  .nav button{background:var(--navy);border:1px solid var(--linea);color:var(--blanco);width:38px;height:38px;border-radius:50%;font-size:17px;cursor:pointer;transition:.2s}
+  .nav button:hover{background:var(--azul)}
+  .nav .cnt{font-size:13px;color:var(--gris);min-width:74px;text-align:center;font-variant-numeric:tabular-nums}
+  .dots{position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:9px}
+  .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);cursor:pointer;transition:.25s}
+  .dots i.on{background:var(--ambar);transform:scale(1.35)}
+  /* Portada */
+  .hero{display:flex;flex-direction:column;align-items:flex-start}
+  .hero h1{font-size:clamp(46px,7vw,86px);margin:6px 0 4px}
+  .hero .sub{font-size:clamp(16px,2vw,21px);color:var(--cielo);max-width:60ch;line-height:1.5}
+  .hero .meta{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
+  .figs{position:absolute;top:110px;right:90px;width:280px;height:280px;opacity:.85}
+  .figs svg{position:absolute;animation:spin 46s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  /* Terminal */
+  .term{background:#0A1626;border:1px solid #2E4A75;border-radius:14px;margin-top:20px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12.5px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.term .tbar{display:flex;gap:7px;padding:10px 14px;background:#0F2038;border-bottom:1px solid #1d3344}
+  .term .tbar i{width:11px;height:11px;border-radius:50%;display:block}
+  .term pre{padding:16px 18px;line-height:1.45;white-space:pre;overflow-x:auto;color:#D7E3F4}
+  .term .g{color:var(--menta)} .term .y{color:var(--ambar)} .term .b{color:var(--cielo)} .term .r{color:var(--coral)}
+  /* Flow svg */
+  .flow{width:100%;max-width:560px;margin:12px auto 0;display:block}
+  .flow text{font-family:inherit}
+  /* Demo calculadora */
+  .calc{background:#0A1626;border:1px solid #2E4A75;border-radius:16px;padding:22px;margin-top:20px}
+  .calc label{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--gris);text-transform:uppercase}
+  .calc select,.calc input{width:100%;margin:6px 0 12px;background:#0F2038;border:1px solid var(--linea);color:var(--blanco);
+    border-radius:10px;padding:10px 12px;font-size:14px;outline:none}
+  .calc select:focus,.calc input:focus{border-color:var(--azul)}
+  .calc button{width:100%;background:linear-gradient(90deg,var(--azul),#1f60c0);border:0;color:#fff;font-weight:800;font-size:15px;
+    padding:12px;border-radius:10px;cursor:pointer;transition:.2s}
+  .calc button:hover{filter:brightness(1.12)}
+  .salida{margin-top:14px;background:rgba(46,124,246,.09);border:1px solid rgba(46,124,246,.4);border-radius:12px;padding:14px 16px;font-size:15px;min-height:52px}
+  .salida b{color:var(--ambar);font-size:20px}
+  @media (max-width:880px){.g3,.g4,.g6{grid-template-columns:1fr 1fr}.g6{grid-template-columns:1fr}.figs{display:none}.wrap{max-height:82vh}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- ============ 1 PORTADA ============ -->
+<section class="slide active">
+  <div class="figs" aria-hidden="true">
+    <svg viewBox="0 0 200 200" width="140" height="140" style="top:0;left:0">
+      <circle cx="100" cy="100" r="70" fill="none" stroke="#7FB2FF" stroke-width="2.5"/>
+      <circle cx="100" cy="100" r="34" fill="none" stroke="#7FB2FF" stroke-width="2.5" stroke-dasharray="5 6"/>
+    </svg>
+    <svg viewBox="0 0 100 100" width="70" height="70" style="top:30px;right:0">
+      <polygon points="50,6 94,94 6,94" fill="none" stroke="#FFB020" stroke-width="3"/>
+    </svg>
+    <svg viewBox="0 0 100 100" width="60" height="60" style="right:26px;top:132px">
+      <rect x="18" y="18" width="64" height="64" fill="none" stroke="#FF6B5E" stroke-width="3.5"/>
+    </svg>
+  </div>
+  <div class="wrap hero">
+    <div class="kicker">SENA · Formación Profesional · Matemáticas</div>
+    <div class="bar"></div>
+    <h1>Áreas, perímetros<br>y volúmenes</h1>
+    <p class="sub">Algoritmo para calcular el área y el perímetro de figuras planas, y el volumen de sólidos regulares, con herramientas computacionales.</p>
+    <div class="meta">
+      <span class="pill">Evidencia GA3-240201528-AA4-EV01</span>
+      <span class="pill">Python 3</span>
+      <span class="pill">2026</span>
+    </div>
+<p style="margin-top:30px;font-size:15px;color:var(--gris)">Presentado por: <b style="color:#fff">Jenifer Daniela Urbano Córdoba</b> · Ficha: <b style="color:#fff">3336511</b></p>
+  </div>
+</section>
+
+<!-- ============ 2 INTRODUCCIÓN ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Introducción</div>
+    <h1>¿De qué trata esta evidencia?</h1>
+    <p class="lead">La geometría está presente en la construcción, el diseño, la ingeniería y la vida diaria. Esta evidencia propone un <b style="color:var(--ambar)">algoritmo computacional</b> que resuelve cálculos de área, perímetro y volumen de forma ordenada y confiable.</p>
+    <div class="grid g3">
+      <div class="card" style="--ac:var(--azul)"><div class="n">6</div><h3>Figuras planas</h3><p>Cuadrado, rectángulo, triángulo, círculo, trapecio y rombo: área y perímetro.</p></div>
+      <div class="card" style="--ac:var(--ambar)"><div class="n">6</div><h3>Sólidos regulares</h3><p>Cubo, prisma, cilindro, cono, esfera y pirámide: volumen.</p></div>
+      <div class="card" style="--ac:var(--coral)"><div class="n">1</div><h3>Programa funcional</h3><p>Calculadora interactiva en consola, con validación de datos y ejemplos.</p></div>
+    </div>
+    <div class="banner"><b>Pregunta guía:</b> ¿y si el sólido es irregular? → lo resolvemos al final.</div>
+  </div>
+</section>
+
+<!-- ============ 3 PROBLEMA ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Problema planteado</div>
+    <h1>El reto a resolver</h1>
+    <div class="grid g2" style="grid-template-columns:1.4fr 1fr">
+      <div>
+        <p class="lead" style="margin-bottom:22px">Necesitamos un procedimiento claro y ordenado que, conociendo el tipo de figura y sus medidas, entregue de forma confiable el <b style="color:var(--ambar)">área y el perímetro</b> (figuras planas) o el <b style="color:var(--ambar)">volumen</b> (sólidos regulares).</p>
+        <div class="card"><h3>¿Qué vamos a hacer?</h3>
+          <p><span class="dot" style="--a:var(--azul)"></span>1. Consultar las fórmulas de figuras y sólidos.</p>
+          <p style="margin-top:8px"><span class="dot" style="--a:var(--ambar)"></span>2. Diseñar el algoritmo (entrada → proceso → salida).</p>
+          <p style="margin-top:8px"><span class="dot" style="--a:var(--coral)"></span>3. Representarlo en pseudocódigo y diagrama de flujo.</p>
+          <p style="margin-top:8px"><span class="dot" style="--a:var(--menta)"></span>4. Implementarlo y probarlo con ejemplos.</p>
+        </div>
+      </div>
+      <div class="card" style="--ac:var(--ambar);background:rgba(255,176,32,.06)">
+        <h3>Pregunta orientadora</h3>
+        <p style="color:var(--blanco);font-size:16px;line-height:1.5">«¿Si tuviera un sólido irregular, qué método utilizaría para calcular su volumen?»</p>
+        <p style="margin-top:16px;color:var(--ambar);font-weight:800">Respondemos al final →</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 FIGURAS PLANAS ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Información recolectada · Figuras planas</div>
+    <h1>Fórmulas de área y perímetro</h1>
+    <div class="grid g6">
+      <div class="card" style="--ac:var(--azul)">
+        <svg viewBox="0 0 90 70" width="86"><rect x="22" y="18" width="46" height="38" fill="none" stroke="#2E7CF6" stroke-width="3"/></svg>
+        <h3>Cuadrado</h3><p>A = l·l<br>P = 4·l</p>
+      </div>
+      <div class="card" style="--ac:var(--ambar)">
+        <svg viewBox="0 0 90 70" width="86"><rect x="15" y="22" width="60" height="30" fill="none" stroke="#FFB020" stroke-width="3"/></svg>
+        <h3>Rectángulo</h3><p>A = b·h<br>P = 2(b+h)</p>
+      </div>
+      <div class="card" style="--ac:var(--coral)">
+        <svg viewBox="0 0 90 70" width="86"><polygon points="45,12 78,58 12,58" fill="none" stroke="#FF6B5E" stroke-width="3"/></svg>
+        <h3>Triángulo</h3><p>A = (b·h)/2<br>P = a+b+c</p>
+      </div>
+      <div class="card" style="--ac:var(--menta)">
+        <svg viewBox="0 0 90 70" width="86"><circle cx="45" cy="35" r="24" fill="none" stroke="#2EC4B6" stroke-width="3"/></svg>
+        <h3>Círculo</h3><p>A = π·r²<br>P = 2·π·r</p>
+      </div>
+      <div class="card" style="--ac:var(--azul)">
+        <svg viewBox="0 0 90 70" width="86"><polygon points="25,20 65,20 80,56 10,56" fill="none" stroke="#2E7CF6" stroke-width="3"/></svg>
+        <h3>Trapecio</h3><p>A = ((B+b)·h)/2<br>P = B+b+c+d</p>
+      </div>
+      <div class="card" style="--ac:var(--ambar)">
+        <svg viewBox="0 0 90 70" width="86"><polygon points="45,10 76,35 45,60 14,35" fill="none" stroke="#FFB020" stroke-width="3"/></svg>
+        <h3>Rombo</h3><p>A = (D·d)/2<br>P = 4·l</p>
+      </div>
+    </div>
+    <div class="banner"><b>Perímetro:</b> suma de los lados · <b>Área:</b> medida de la superficie interior.</div>
+  </div>
+</section>
+
+<!-- ============ 5 SÓLIDOS ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Información recolectada · Sólidos regulares</div>
+    <h1>Fórmulas de volumen</h1>
+    <div class="grid g6">
+      <div class="card" style="--ac:var(--azul)"><h3>Cubo</h3><p>V = l³</p></div>
+      <div class="card" style="--ac:var(--ambar)"><h3>Prisma rectangular</h3><p>V = largo·ancho·alto</p></div>
+      <div class="card" style="--ac:var(--coral)"><h3>Cilindro</h3><p>V = π·r²·h</p></div>
+      <div class="card" style="--ac:var(--menta)"><h3>Cono</h3><p>V = (π·r²·h)/3</p></div>
+      <div class="card" style="--ac:var(--azul)"><h3>Esfera</h3><p>V = (4/3)·π·r³</p></div>
+      <div class="card" style="--ac:var(--ambar)"><h3>Pirámide</h3><p>V = (l²·h)/3</p></div>
+    </div>
+    <div class="banner"><b>Clave:</b> prismas y cilindros → área de la base × altura · conos y pirámides → ÷ 3 · el volumen se mide en u³.</div>
+  </div>
+</section>
+
+<!-- ============ 6 ALGORITMO EPS ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">El algoritmo</div>
+    <h1>Entrada · Proceso · Salida</h1>
+    <div class="grid g3">
+      <div class="card" style="--ac:var(--azul)"><div class="n">ENTRADA</div>
+        <p>¿Qué necesita el algoritmo?</p>
+        <p style="margin-top:10px"><span class="dot" style="--a:var(--azul)"></span>Tipo de figura (plana o sólido)</p>
+        <p style="margin-top:8px"><span class="dot" style="--a:var(--azul)"></span>Medidas: lado, base, radio, altura…</p>
+        <p style="margin-top:8px"><span class="dot" style="--a:var(--azul)"></span>Unidad de medida (cm, m…)</p>
+      </div>
+      <div class="card" style="--ac:var(--ambar)"><div class="n">PROCESO</div>
+        <p>¿Qué hace con esos datos?</p>
+        <p style="margin-top:10px"><span class="dot" style="--a:var(--ambar)"></span>Valida que las medidas sean &gt; 0</p>
+        <p style="margin-top:8px"><span class="dot" style="--a:var(--ambar)"></span>Elige la fórmula correspondiente</p>
+        <p style="margin-top:8px"><span class="dot" style="--a:var(--ambar)"></span>Calcula A, P o V</p>
+      </div>
+      <div class="card" style="--ac:var(--coral)"><div class="n">SALIDA</div>
+        <p>¿Qué entrega?</p>
+        <p style="margin-top:10px"><span class="dot" style="--a:var(--coral)"></span>Resultado numérico claro</p>
+        <p style="margin-top:8px"><span class="dot" style="--a:var(--coral)"></span>Con su unidad (u, u², u³)</p>
+        <p style="margin-top:8px"><span class="dot" style="--a:var(--coral)"></span>Opción de repetir el cálculo</p>
+      </div>
+    </div>
+    <div class="banner">El algoritmo se repite (ciclo) mientras el usuario quiera hacer otro cálculo · el esquema aplica a las 12 figuras: solo cambia la fórmula.</div>
+  </div>
+</section>
+
+<!-- ============ 7 SEUDOCÓDIGO ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">El algoritmo · Seudocódigo</div>
+    <h1>Paso a paso</h1>
+    <pre class="code"><span class="k">INICIO</span>
+  <span class="k">REPETIR</span>
+    <span class="s">MOSTRAR menú: 1. figuras planas   2. sólidos   0. salir</span>
+    <span class="s">ELEGIR figura y LEER medidas (lado, radio, altura…)</span>
+    <span class="e">MIENTRAS alguna medida ≤ 0 :</span>
+        <span class="e">MOSTRAR “dato inválido” y VOLVER a leer</span>
+    <span class="m">CALCULAR según la figura:</span>
+        <span class="m">cuadrado   →  A ← l²  ·  P ← 4·l</span>
+        <span class="m">círculo    →  A ← π·r²  ·  P ← 2·π·r</span>
+        <span class="m">cilindro   →  V ← π·r²·h</span>
+        <span class="m">esfera     →  V ← (4/3)·π·r³</span>
+    <span class="s">MOSTRAR resultado con su unidad (u, u², u³)</span>
+  <span class="k">HASTA</span> que el usuario decida terminar
+<span class="k">FIN</span></pre>
+  </div>
+</section>
+
+<!-- ============ 8 DIAGRAMA DE FLUJO ============ -->
+<section class="slide">
+  <div class="wrap" style="text-align:center">
+    <div class="kicker">El algoritmo · Diagrama de flujo</div>
+    <h1>Representación visual del proceso</h1>
+<svg class="flow" viewBox="0 0 620 745" role="img" aria-label="Diagrama de flujo del algoritmo">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#7FB2FF"/>
+        </marker>
+        <marker id="arr-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#FF6B5E"/>
+        </marker>
+        <marker id="arr-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#2EC4B6"/>
+        </marker>
+      </defs>
+      <g font-size="13" font-weight="700" text-anchor="middle">
+        <!-- INICIO -->
+        <rect x="240" y="16" width="140" height="42" rx="21" fill="#2E7CF6"/>
+        <text x="310" y="43" fill="#fff">INICIO</text>
+        <line x1="310" y1="58" x2="310" y2="88" stroke="#7FB2FF" stroke-width="2" marker-end="url(#arr)"/>
+        <!-- MENÚ -->
+        <rect x="215" y="88" width="190" height="52" rx="10" fill="#16395F" stroke="#7FB2FF" stroke-width="1.5"/>
+        <text x="310" y="110" fill="#fff">Mostrar menú</text>
+        <text x="310" y="128" fill="#7FB2FF" font-size="11.5" font-weight="400">figuras planas / sólidos</text>
+        <line x1="310" y1="140" x2="310" y2="168" stroke="#7FB2FF" stroke-width="2" marker-end="url(#arr)"/>
+        <!-- LEER -->
+        <rect x="205" y="168" width="210" height="52" rx="10" fill="#16395F" stroke="#7FB2FF" stroke-width="1.5"/>
+        <text x="310" y="190" fill="#fff">Seleccionar figura y leer</text>
+        <text x="310" y="208" fill="#7FB2FF" font-size="11.5" font-weight="400">lado, radio, altura…</text>
+        <line x1="310" y1="220" x2="310" y2="246" stroke="#7FB2FF" stroke-width="2" marker-end="url(#arr)"/>
+        <!-- DECISIÓN VÁLIDOS -->
+        <polygon points="310,246 440,292 310,338 180,292" fill="#223B5C" stroke="#7FB2FF" stroke-width="1.5"/>
+        <text x="310" y="288" fill="#fff" font-size="12.5">¿Datos válidos?</text>
+        <text x="310" y="305" fill="#7FB2FF" font-size="10.5" font-weight="400">(valor &gt; 0)</text>
+        <!-- No -> dato inválido -->
+        <line x1="440" y1="292" x2="496" y2="292" stroke="#FF6B5E" stroke-width="2" marker-end="url(#arr-c)"/>
+        <text x="452" y="280" fill="#FF6B5E" font-size="12" font-weight="700">No</text>
+        <rect x="496" y="270" width="104" height="44" rx="9" fill="#552A2E" stroke="#FF6B5E" stroke-width="1.4"/>
+        <text x="548" y="295" fill="#FFC9C3" font-size="11" font-weight="400">mostrar “dato</text>
+        <text x="548" y="307" fill="#FFC9C3" font-size="11" font-weight="400">inválido” · reingresar</text>
+        <line x1="548" y1="314" x2="548" y2="352" stroke="#FF6B5E" stroke-width="2" marker-end="url(#arr-c)"/>
+        <line x1="548" y1="352" x2="130" y2="352" stroke="#FF6B5E" stroke-width="2" marker-end="url(#arr-c)"/>
+        <line x1="130" y1="352" x2="130" y2="194" stroke="#FF6B5E" stroke-width="2"/>
+        <line x1="130" y1="194" x2="203" y2="194" stroke="#FF6B5E" stroke-width="2" marker-end="url(#arr-c)"/>
+        <!-- Sí -> CALCULAR -->
+        <line x1="310" y1="338" x2="310" y2="402" stroke="#2EC4B6" stroke-width="2" marker-end="url(#arr-m)"/>
+        <text x="282" y="352" fill="#2EC4B6" font-size="12" font-weight="700">Sí</text>
+        <rect x="225" y="402" width="170" height="48" rx="10" fill="#2E7CF6"/>
+        <text x="310" y="422" fill="#fff">Calcular con la fórmula</text>
+        <text x="310" y="440" fill="#dbe8fb" font-size="11.5" font-weight="400">A, P o V</text>
+        <line x1="310" y1="450" x2="310" y2="490" stroke="#7FB2FF" stroke-width="2" marker-end="url(#arr)"/>
+        <!-- MOSTRAR -->
+        <rect x="230" y="490" width="160" height="44" rx="10" fill="#16395F" stroke="#7FB2FF" stroke-width="1.5"/>
+        <text x="310" y="517" fill="#fff">Mostrar resultado</text>
+        <line x1="310" y1="534" x2="310" y2="574" stroke="#7FB2FF" stroke-width="2" marker-end="url(#arr)"/>
+        <!-- DECISIÓN OTRO -->
+        <polygon points="310,574 430,612 310,650 190,612" fill="#223B5C" stroke="#7FB2FF" stroke-width="1.5"/>
+        <text x="310" y="616" fill="#fff" font-size="12.5">¿Otro cálculo?</text>
+        <!-- Sí -> loop -->
+        <line x1="190" y1="612" x2="60" y2="612" stroke="#2EC4B6" stroke-width="2" marker-end="url(#arr-m)"/>
+        <text x="96" y="600" fill="#2EC4B6" font-size="12" font-weight="700">Sí</text>
+        <line x1="60" y1="612" x2="60" y2="114" stroke="#2EC4B6" stroke-width="2"/>
+        <line x1="60" y1="114" x2="213" y2="114" stroke="#2EC4B6" stroke-width="2" marker-end="url(#arr-m)"/>
+        <!-- No -> FIN -->
+        <line x1="310" y1="650" x2="310" y2="676" stroke="#FF6B5E" stroke-width="2" marker-end="url(#arr-c)"/>
+        <text x="282" y="664" fill="#FF6B5E" font-size="12" font-weight="700">No</text>
+        <rect x="240" y="676" width="140" height="42" rx="21" fill="#FF6B5E"/>
+        <text x="310" y="703" fill="#fff">FIN</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 9 IMPLEMENTACIÓN ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Implementación computacional</div>
+    <h1>El programa en acción</h1>
+    <div class="grid" style="grid-template-columns:1.35fr 1fr;align-items:start">
+      <div class="term">
+        <div class="tbar"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i><span style="margin-left:10px;color:#8FA3BC;font-size:11px">jenifrutica@fedora: calculadora_geometrica.py</span></div>
+        <pre>  ┌─────────────────────────────────────────────────────┐
+  │  <span class="y">CALCULADORA GEOMÉTRICA</span>                          │
+  │  Áreas · Perímetros · Volúmenes                       │
+  │  Evidencia GA3-240201528-AA4-EV01                     │
+  └─────────────────────────────────────────────────────┘
+
+  ¿Qué desea calcular?
+    1 → Área y perímetro de figuras planas
+    2 → Volumen de sólidos regulares
+  Opción: <span class="b">1</span>
+  → CÍRCULO
+      · radio: <span class="b">5</span>
+      ┌──────────────────────────────────────────────┐
+      │ <span class="y">Círculo</span>                                      │
+      │ ÁREA (A)                            78.5398 u²│
+      │ PERÍMETRO (P)                       31.4159 u │
+      │ Fórmula: A = π·r² · P = 2·π·r                 │
+      └──────────────────────────────────────────────┘
+
+  ¿Realizar otro cálculo? (s/n): <span class="b">n</span>
+  ¡Gracias por usar la Calculadora Geométrica!</pre>
+      </div>
+      <div>
+        <div class="card" style="--ac:var(--azul)"><h3>calculadora_geometrica.py</h3><p>Menú interactivo: figuras planas / sólidos · valida medidas &gt; 0 · π con precisión (math.pi) · resultados con unidades (u, u², u³).</p></div>
+        <div class="banner" style="margin-top:18px">Ejecutar: <b>python3 calculadora_geometrica.py</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 EJEMPLOS ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Verificación</div>
+    <h1>Ejemplos resueltos</h1>
+    <div class="grid g4">
+      <div class="card" style="--ac:var(--azul)"><div class="n">≈ 78,54 u²</div><h3>Círculo · r = 5</h3><p>A = π·25 · P ≈ 31,42 u</p></div>
+      <div class="card" style="--ac:var(--ambar)"><div class="n">36 u²</div><h3>Cuadrado · l = 6</h3><p>A = 36 · P = 24 u</p></div>
+      <div class="card" style="--ac:var(--coral)"><div class="n">≈ 197,92 u³</div><h3>Cilindro · r = 3, h = 7</h3><p>V = π·9·7</p></div>
+      <div class="card" style="--ac:var(--menta)"><div class="n">≈ 268,08 u³</div><h3>Esfera · r = 4</h3><p>V = (4/3)·π·64</p></div>
+    </div>
+    <div class="banner">Los resultados del programa coinciden con el cálculo manual ✓</div>
+  </div>
+</section>
+
+<!-- ============ 11 RETO IRREGULAR ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Pregunta reto</div>
+    <h1>¿Cómo medir un sólido irregular?</h1>
+    <div class="grid g4">
+      <div class="card" style="--ac:var(--ambar)"><div class="n">1</div><h3>Principio de Arquímedes</h3><p>Sumergir el sólido en agua y medir el volumen desplazado. Directo y clásico.</p></div>
+      <div class="card" style="--ac:var(--cielo)"><div class="n">2</div><h3>Método de rebanadas</h3><p>Dividir en cortes (discos) y sumar sus volúmenes: integración numérica.</p></div>
+      <div class="card" style="--ac:var(--menta)"><div class="n">3</div><h3>Modelado 3D / CAD</h3><p>Escanear o modelar y calcular el volumen de la malla digital.</p></div>
+      <div class="card" style="--ac:var(--coral)"><div class="n">4</div><h3>Monte Carlo</h3><p>Lanzar puntos aleatorios en un cubo que lo contiene y estimar por proporción.</p></div>
+    </div>
+    <div class="banner"><b>Recomendación:</b> Arquímedes para el mundo físico · integración numérica o CAD para software.</div>
+  </div>
+</section>
+
+<!-- ============ 12 CONCLUSIONES ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Conclusiones</div>
+    <h1>¿Qué logramos?</h1>
+    <div class="grid g4">
+      <div class="card" style="--ac:var(--azul)"><h3>✓ Algoritmo claro</h3><p>Entrada → proceso → salida, con validación: una sola estructura resuelve 12 figuras.</p></div>
+      <div class="card" style="--ac:var(--ambar)"><h3>✓ Cálculo confiable</h3><p>Validar medidas &gt; 0 evita resultados erróneos o sin sentido.</p></div>
+      <div class="card" style="--ac:var(--coral)"><h3>✓ Herramientas computacionales</h3><p>Python agiliza el cálculo, lo verifica con ejemplos y lo hace repetible.</p></div>
+      <div class="card" style="--ac:var(--menta)"><h3>✓ Sólidos irregulares</h3><p>Arquímedes, rebanadas, CAD y Monte Carlo cuando no hay fórmula exacta.</p></div>
+    </div>
+    <div class="banner">Un algoritmo ordenado convierte un problema geométrico en una solución computacional. 🎯</div>
+  </div>
+</section>
+
+<!-- ============ 13 CALCULADORA DEMO ============ -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker">Demo en vivo</div>
+    <h1>Pruébalo tú mismo</h1>
+    <div class="grid" style="grid-template-columns:1.2fr 1fr;align-items:start">
+      <div class="calc">
+        <label for="tipo">Tipo</label>
+        <select id="tipo">
+          <option value="plana">Figura plana (área y perímetro)</option>
+          <option value="solido">Sólido regular (volumen)</option>
+        </select>
+        <label for="figura">Figura</label>
+        <select id="figura"></select>
+        <label for="unidad">Unidad de medida</label>
+        <input id="unidad" value="cm" placeholder="cm">
+        <div id="params"></div>
+        <button id="calcBtn">Calcular</button>
+        <div class="salida" id="salida">Completa los datos y pulsa Calcular ⚡</div>
+      </div>
+      <div class="card" style="--ac:var(--ambar)">
+        <h3>El algoritmo en JavaScript</h3>
+        <p>Esta calculadora es una implementación en el navegador del mismo algoritmo de la evidencia: <b style="color:#fff">entrada → validación → fórmula → salida</b>, con su unidad (u² / u³).</p>
+        <p style="margin-top:10px;color:var(--gris)">El programa entregado <b style="color:#fff">calculadora_geometrica.py</b> implementa la misma lógica en consola.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 CRÉDITOS ============ -->
+<section class="slide">
+  <div class="wrap" style="text-align:left">
+    <div class="kicker">Evidencia GA3-240201528-AA4-EV01</div>
+    <div class="bar"></div>
+    <h1>¡Gracias!</h1>
+<p class="lead" style="margin-top:18px">Elaborado por: <b style="color:#fff">Jenifer Daniela Urbano Córdoba</b> · Aprendiz SENA · Ficha: <b style="color:#fff">3336511</b> · Matemáticas 2026</p>
+    <p class="lead" style="margin-top:12px">Herramienta: Python 3 · Diagramas: seudocódigo y flujo · Fórmulas: figuras planas y sólidos regulares.</p>
+    <div class="meta" style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
+      <span class="pill">Calculadora: calculadora_geometrica.py</span>
+      <span class="pill">Presentación: GA4_AA4_Presentacion.pptx / .pdf</span>
+    </div>
+  </div>
+</section>
+
+<nav class="nav">
+  <button id="prev" aria-label="Anterior">←</button>
+  <span class="cnt"><span id="cur">1</span> / <span id="tot">14</span></span>
+  <button id="next" aria-label="Siguiente">→</button>
+</nav>
+<div class="dots" id="dots"></div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var tot = slides.length;
+  var cur = 0;
+  document.getElementById('tot').textContent = tot;
+  var dotsEl = document.getElementById('dots');
+  var dots = [];
+  for (var i = 0; i < tot; i++){
+    var d = document.createElement('i');
+    d.addEventListener('click', (function(n){ return function(){ go(n); }; })(i));
+    dotsEl.appendChild(d);
+    dots.push(d);
+  }
+  function go(n){
+    cur = Math.max(0, Math.min(tot - 1, n));
+    for (var i = 0; i < tot; i++){
+      slides[i].classList.toggle('active', i === cur);
+      dots[i].classList.toggle('on', i === cur);
+    }
+    document.getElementById('cur').textContent = cur + 1;
+    document.getElementById('progress').style.width = ((cur + 1) / tot * 100) + '%';
+    window.scrollTo(0, 0);
+  }
+  document.getElementById('prev').addEventListener('click', function(){ go(cur - 1); });
+  document.getElementById('next').addEventListener('click', function(){ go(cur + 1); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); go(cur + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp'){ e.preventDefault(); go(cur - 1); }
+    else if (e.key === 'Home'){ go(0); }
+    else if (e.key === 'End'){ go(tot - 1); }
+  });
+  go(0);
+
+  // ---------------- Calculadora interactiva ----------------
+  var FIGURAS = {
+    plana: {
+      cuadrado:   { params: {lado: 'lado'},            calc: function(v){ return { A: v.lado * v.lado, P: 4 * v.lado }; }, f: 'A = l² · P = 4·l' },
+      rectangulo: { params: {base: 'base', altura: 'altura'}, calc: function(v){ var b=v.base, h=v.altura; return { A: b*h, P: 2*(b+h) }; }, f: 'A = b·h · P = 2(b+h)' },
+      triangulo:  { params: {base: 'base', altura: 'altura', a: 'lado a', b: 'lado b', c: 'lado c'}, calc: function(v){ return { A: (v.base*v.altura)/2, P: v.a+v.b+v.c }; }, f: 'A = (b·h)/2 · P = a+b+c' },
+      circulo:    { params: {radio: 'radio'},          calc: function(v){ return { A: Math.PI*v.radio*v.radio, P: 2*Math.PI*v.radio }; }, f: 'A = π·r² · P = 2π·r' },
+      trapecio:   { params: {B: 'base mayor B', b: 'base menor b', h: 'altura', c: 'lado c', d: 'lado d'}, calc: function(v){ return { A: ((v.B+v.b)*v.h)/2, P: v.B+v.b+v.c+v.d }; }, f: 'A = ((B+b)·h)/2 · P = B+b+c+d' },
+      rombo:      { params: {D: 'diagonal D', d: 'diagonal d', l: 'lado'}, calc: function(v){ return { A: (v.D*v.d)/2, P: 4*v.l }; }, f: 'A = (D·d)/2 · P = 4·l' }
+    },
+    solido: {
+      cubo:      { params: {arista: 'arista'}, calc: function(v){ return { V: v.arista**3 }; }, f: 'V = l³' },
+      prisma:    { params: {largo: 'largo', ancho: 'ancho', alto: 'alto'}, calc: function(v){ return { V: v.largo*v.ancho*v.alto }; }, f: 'V = largo·ancho·alto' },
+      cilindro:  { params: {radio: 'radio', h: 'altura'}, calc: function(v){ return { V: Math.PI*v.radio*v.radio*v.h }; }, f: 'V = π·r²·h' },
+      cono:      { params: {radio: 'radio', h: 'altura'}, calc: function(v){ return { V: (Math.PI*v.radio*v.radio*v.h)/3 }; }, f: 'V = (π·r²·h)/3' },
+      esfera:    { params: {radio: 'radio'}, calc: function(v){ return { V: (4/3)*Math.PI*v.radio**3 }; }, f: 'V = (4/3)·π·r³' },
+      piramide:  { params: {lado: 'lado base', h: 'altura'}, calc: function(v){ return { V: (v.lado*v.lado*v.h)/3 }; }, f: 'V = (l²·h)/3' }
+    }
+  };
+  var tipoSel = document.getElementById('tipo');
+  var figSel = document.getElementById('figura');
+  var paramsDiv = document.getElementById('params');
+  var salida = document.getElementById('salida');
+  var unidad = document.getElementById('unidad');
+
+  function renderFiguras(){
+    var tipo = tipoSel.value;
+    figSel.innerHTML = '';
+    Object.keys(FIGURAS[tipo]).forEach(function(k){
+      var o = document.createElement('option');
+      o.value = k;
+      o.textContent = FIGURAS[tipo][k].f + '  ·  ' + k.charAt(0).toUpperCase() + k.slice(1);
+      figSel.appendChild(o);
+    });
+    renderParams();
+  }
+  function renderParams(){
+    paramsDiv.innerHTML = '';
+    var tipo = tipoSel.value, fig = figSel.value;
+    var def = FIGURAS[tipo][fig];
+    Object.keys(def.params).forEach(function(k){
+      var lab = document.createElement('label');
+      lab.textContent = def.params[k];
+      var inp = document.createElement('input');
+      inp.type = 'number'; inp.step = 'any'; inp.min = '0'; inp.value = '';
+      inp.dataset.key = k;
+      paramsDiv.appendChild(lab);
+      paramsDiv.appendChild(inp);
+    });
+  }
+  function num(s){ return parseFloat(String(s).replace(',', '.'));
+  }
+  document.getElementById('calcBtn').addEventListener('click', function(){
+    var tipo = tipoSel.value, fig = figSel.value;
+    var def = FIGURAS[tipo][fig];
+    var v = {}, ok = true, msg = '';
+    var inputs = paramsDiv.querySelectorAll('input');
+    inputs.forEach(function(inp){
+      var val = num(inp.value);
+      if (isNaN(val) || val <= 0){ ok = false; msg = '✗ Entrada inválida: los datos deben ser números mayores que 0.'; return; }
+      v[inp.dataset.key] = val;
+    });
+    if (!ok){ salida.innerHTML = '<span style="color:#FF6B5E">' + msg + '</span>'; return; }
+    var r = def.calc(v);
+    var u = unidad.value.trim() || 'u';
+    var html = '<div style="margin-bottom:6px">' + def.f + '</div>';
+    Object.keys(r).forEach(function(k){
+      html += '<span style="color:#7FB2FF">' + k + ' =</span> <b>' + r[k].toFixed(4) + '</b> ' + (k === 'A' ? u+'²' : k === 'P' ? u : u+'³') + '<br>';
+    });
+    salida.innerHTML = html;
+  });
+  tipoSel.addEventListener('change', renderFiguras);
+  figSel.addEventListener('change', renderParams);
+  renderFiguras();
+})();
+</script>
+</body>
+</html>
